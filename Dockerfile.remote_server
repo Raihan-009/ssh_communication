@@ -1,0 +1,18 @@
+FROM ubuntu:latest
+
+# Install SSH server
+RUN apt-get update && apt-get install -y openssh-server
+RUN mkdir /var/run/sshd
+
+# Add a user and copy SSH public key
+RUN useradd -m -d /home/ryuzaki -s /bin/bash ryuzaki
+COPY id_rsa.pub /home/ryuzaki/.ssh/authorized_keys
+RUN chmod 700 /home/ryuzaki/.ssh && \
+    chmod 600 /home/ryuzaki/.ssh/authorized_keys && \
+    chown -R ryuzaki:ryuzaki /home/ryuzaki/.ssh
+
+# Expose SSH port
+EXPOSE 22
+
+# Start SSH server
+CMD ["/usr/sbin/sshd", "-D"]
